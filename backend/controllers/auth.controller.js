@@ -120,3 +120,12 @@ export const logout = (req, res) => {
   res.clearCookie("jwt-linkedin");
   res.json({ message: "User logged out successfully" });
 };
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    res.json(req.user);
+  } catch (error) {
+    console.error("Error in getCurrentUser:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
