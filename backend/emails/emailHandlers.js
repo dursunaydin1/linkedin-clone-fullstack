@@ -1,6 +1,7 @@
 import { mailtrapClient, sender } from "../lib/mailtrap.js";
 import {
   createCommentNotificationEmailTemplate,
+  createConnectionAcceptedEmailTemplate,
   createWelcomeEmailTemplate,
 } from "../emails/emailTemplates.js";
 
@@ -28,11 +29,11 @@ export const sendCommentNotificationEmail = async (
   commentContent,
   postUrl
 ) => {
-  const recipient = [{ email }];
+  const recipient = [{ email: recipientEmail }];
   try {
     const response = await mailtrapClient.send({
       from: sender,
-      to: recipientEmail,
+      to: recipient,
       subject: "New comment on your post",
       html: createCommentNotificationEmailTemplate(
         recipientName,
@@ -43,6 +44,32 @@ export const sendCommentNotificationEmail = async (
       category: "comment_notification",
     });
     console.log("Comment notification email sent successfully", response);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const sendConnectionAcceptedEmail = async (
+  senderEmail,
+  senderName,
+  recipientName,
+  profileUrl
+) => {
+  const recipient = [{ email: senderEmail }];
+
+  try {
+    const response = await mailtrapClient.send({
+      from: sender,
+      to: recipient,
+      subject: `${recipientName} has accepted your connection request on UnLinked!`,
+      html: createConnectionAcceptedEmailTemplate(
+        senderName,
+        recipientName,
+        profileUrl
+      ),
+      category: "connection_accepted",
+    });
+    console.log("Connection accepted email sent successfully", response);
   } catch (error) {
     throw error;
   }
