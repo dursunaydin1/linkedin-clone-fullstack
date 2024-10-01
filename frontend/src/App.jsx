@@ -1,8 +1,10 @@
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
-import HomePage from "./components/pages/HomePage";
-import SignUpPage from "./components/pages/auth/SignUpPage";
-import LoginPage from "./components/pages/auth/LoginPage";
+
+import HomePage from "./pages/HomePage";
+import SignUpPage from "./pages/auth/SignUpPage";
+import LoginPage from "./pages/auth/LoginPage";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -12,6 +14,7 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
+      <Toaster />
     </Layout>
   );
 }
