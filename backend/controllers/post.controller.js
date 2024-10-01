@@ -1,6 +1,7 @@
 import cloudinary from "../lib/cloudinary.js";
 import Post from "../models/post.model.js";
 import Notification from "../models/notification.model.js";
+import { sendCommentNotificationEmail } from "../emails/emailHandlers.js";
 
 export const getFeedPosts = async (req, res) => {
   try {
@@ -112,10 +113,51 @@ export const createComment = async (req, res) => {
       });
 
       await newNotification.save();
+
+      try {
+        const postUrl = process.env.FRONTEND_URL + "/post/" + postId;
+        await sendCommentNotificationEmail(
+          post.author.email,
+          post.author.name,
+          req.user.name,
+          content,
+          postUrl
+        );
+      } catch (error) {
+        console.error("Error in sendCommentNotificationEmail:", error.message);
+      }
     }
     res.status(201).json(post);
   } catch (error) {
     console.error("Error in createComment:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const likePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const post = await Post.findById(postId);
+    const userId = req.user._id;
+
+    if (post.likes.includes(userId)) {
+      post.likes = post.likes.filter((like) => like.toString() !== userId);
+    } else {
+      post.likes.push(userId);
+      if (post.author.toString() !== userId.toString()) {
+        const newNotification = new Notification({
+          recepient: post.author,
+          type: "like",
+          relatedUser: userId,
+          relatedPost: postId,
+        });
+        await newNotification.save();
+      }
+    }
+    await post.save();
+    res.status(200).json(post);
+  } catch (error) {
+    console.error("Error in likePost:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
