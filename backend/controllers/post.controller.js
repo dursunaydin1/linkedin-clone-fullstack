@@ -106,7 +106,7 @@ export const createComment = async (req, res) => {
     // Create a natification if the comment owner is not the post owner
     if (post.author.toString() !== req.user._id.toString()) {
       const newNotification = new Notification({
-        recepient: post.author,
+        recipient: post.author,
         type: "comment",
         relatedUser: req.user._id,
         relatedPost: postId,
@@ -146,7 +146,7 @@ export const likePost = async (req, res) => {
       post.likes.push(userId);
       if (post.author.toString() !== userId.toString()) {
         const newNotification = new Notification({
-          recepient: post.author,
+          recipient: post.author,
           type: "like",
           relatedUser: userId,
           relatedPost: postId,
