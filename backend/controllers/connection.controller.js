@@ -231,18 +231,20 @@ export const getConnectionStatus = async (req, res) => {
       ],
       status: "pending",
     });
-
     if (pendingRequest) {
       if (pendingRequest.sender.toString() === currentUserId.toString()) {
-        res.status(200).json({ status: "pending" });
+        return res.status(200).json({ status: "pending" });
       } else {
-        res
+        return res
           .status(200)
           .json({ status: "received", requestId: pendingRequest._id });
       }
     }
+    return res.status(200).json({ status: "not connected" });
 
-    res.status(200).json({ status: "not connected" });
+    if (currentUser.connections.includes(targetUserId)) {
+      return res.status(200).json({ status: "connected" });
+    }
   } catch (error) {
     console.error("Error in getConnectionsStatus:", error.message);
     res.status(500).json({ message: "Internal server error" });
