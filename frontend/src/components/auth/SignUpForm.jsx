@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { axiosInstance } from "../../lib/axios";
+import { axiosInstance } from "../../lib/axios.js";
 import { toast } from "react-hot-toast";
 import { Loader } from "lucide-react";
 
@@ -19,23 +19,23 @@ const SignUpForm = () => {
     },
     onSuccess: () => {
       toast.success("Account created successfully");
-      queryClient.refetchQueries({ queryKey: ["authUser"] });
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
-    onError: (error) => {
-      toast.error(error.response.data.message || "Something went wrong");
+    onError: (err) => {
+      toast.error(err.response.data.message || "Something went wrong");
     },
   });
 
-  const handleSignUp = (event) => {
-    event.preventDefault();
-    signUpMutation({ name, email, username, password });
+  const handleSignUp = (e) => {
+    e.preventDefault();
+    signUpMutation({ name, username, email, password });
   };
 
   return (
     <form onSubmit={handleSignUp} className="flex flex-col gap-4">
       <input
         type="text"
-        placeholder="Full Name"
+        placeholder="Full name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="input input-bordered w-full"
@@ -47,6 +47,7 @@ const SignUpForm = () => {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         className="input input-bordered w-full"
+        required
       />
       <input
         type="email"
@@ -54,6 +55,7 @@ const SignUpForm = () => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="input input-bordered w-full"
+        required
       />
       <input
         type="password"
@@ -61,11 +63,13 @@ const SignUpForm = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         className="input input-bordered w-full"
+        required
       />
+
       <button
         type="submit"
         disabled={isLoading}
-        className="btn btn-primary w-full"
+        className="btn btn-primary w-full text-white"
       >
         {isLoading ? (
           <Loader className="size-5 animate-spin" />
@@ -76,5 +80,4 @@ const SignUpForm = () => {
     </form>
   );
 };
-
 export default SignUpForm;
